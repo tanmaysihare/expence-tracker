@@ -19,7 +19,7 @@ function App() {
           <AuthPage />
         </Route>
         )}
-        {authCtx.isLoggedIn && (
+        {!authCtx.isLoggedIn && (
         <Route path='/profile'>
           <UserProfile />
         </Route>

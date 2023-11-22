@@ -1,7 +1,8 @@
 import { useState, useRef, useContext } from 'react';
-import {useHistory} from 'react-router-dom';
+import {useHistory,Link} from 'react-router-dom';
 import classes from './AuthForm.module.css';
 import AuthContext from '../../store/auth-context';
+//import ProfileForm from '../Profile/ProfileForm';
 
 const AuthForm = () => {
   const history = useHistory();
@@ -96,7 +97,9 @@ fetch(url,
             className={classes.toggle}
             onClick={switchAuthModeHandler}
           >
-            {isLogin ? 'Create new account' : 'Login with existing account'}
+            {isLogin && (<Link to='/profile'>Forget Password </Link>)}
+            {isLogin ? ' Create new account ' : ' Login with existing account '}
+            
           </button>
         </div>
       </form>

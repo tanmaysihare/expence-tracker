@@ -13,7 +13,7 @@ const ProfileForm = () => {
 
     const enteredNewPassword = newPasswordInputRef.current.value;
 
-    fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyD7VXS70SO74U6Hqx45m2mqu1RMlFZQx0I', {
+    fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyA-ZiBDqAYaaBy2czSnBwxdUgrRk0Y0Qjs', {
       method: 'POST',
       body: JSON.stringify({
         idToken : authCtx.token,
@@ -31,7 +31,7 @@ const ProfileForm = () => {
     <form className={classes.form} onSubmit={submitHandler}>
       <div className={classes.control}>
         <label htmlFor='new-password'>New Password</label>
-        <input type='password' id='new-password'minLength="7" ref={newPasswordInputRef}/>
+        <input type='password' id='new-password'minLength="6" ref={newPasswordInputRef}/>
       </div>
       <div className={classes.action}>
         <button>Change Password</button>
