@@ -11,7 +11,7 @@ const MainNavigation = () => {
  const isLoggedIn = authCtx.isLoggedIn;
  const logoutHandler = () => {
   authCtx.logout();
-  history.replace('/');
+  history.replace('/auth');
  };
 
   return (
@@ -26,11 +26,7 @@ const MainNavigation = () => {
             <Link to='/auth'>Login</Link>
           </li>
           )}
-         {isLoggedIn && (
-          <li>
-          <Link to='/profile'>Profile</Link>
-        </li>
-         )}
+        
           {isLoggedIn &&  (
             <li>
             <button onClick={logoutHandler}>Logout</button>

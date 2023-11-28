@@ -1,30 +1,48 @@
 import classes from './StartingPageContent.module.css';
 import { useContext } from 'react';
 import AuthContext from '../../store/auth-context';
+import {  useHistory } from 'react-router-dom';
 
 const StartingPageContent = () => {
-    const authCtx = useContext(AuthContext);
-    const isLoggedIn = authCtx.isLoggedIn ;
+  const authCtx = useContext(AuthContext);
+  const isLoggedIn = authCtx.isLoggedIn;
+  const completeProfile = authCtx.profileComplete;
+   const history = useHistory();
+  
 
-    const submitHandler = (event) => {
-        event.preventDefault();
-        
+  const buttonHandler = () => {
+  
+        history.push('/upProfile');
     }
+  
 
   return (
-<>
-    <section className={classes.starting}>
-      <h1>Welcome to expanse tracker</h1>
-    </section>
+    <>
+      {isLoggedIn && !completeProfile && (
+        <div>
+          <form>
+            <label>Complete your profile</label><br></br>
+            {/* Use a button type instead of a submit button */}
+            <button type="button" onClick={buttonHandler}>
+              Click here
+            </button>
+          </form>
+        </div>
+      )}
+      <section className={classes.starting}>
+        <h1>Welcome to expense tracker</h1>
+        <div>
+          <form>
+            <label>Account Holder Name</label>
+            <input type="text" />
+            <label>Photo url</label>
+            <input type="text" />
+          </form>
+        </div>
+      </section>
 
-    {isLoggedIn && (<div>
-        <form onSubmit={submitHandler}>
-            <label>complete your profile</label>
-            <button>click hare</button>
-        </form>
-    </div>)}
-
-</>
+     
+    </>
   );
 };
 

@@ -97,8 +97,8 @@ fetch(url,
             className={classes.toggle}
             onClick={switchAuthModeHandler}
           >
-            {isLogin && (<Link to='/profile'>Forget Password </Link>)}
-            {isLogin ? ' Create new account ' : ' Login with existing account '}
+           
+            {isLogin ? <Link to='/profile'>Forget Password </Link> :' Create new account ' ? ' Login with existing account ' : ''}
             
           </button>
         </div>

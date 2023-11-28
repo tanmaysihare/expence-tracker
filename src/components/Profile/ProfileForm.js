@@ -1,40 +1,44 @@
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import {useHistory} from 'react-router-dom';
 import classes from './ProfileForm.module.css';
-import AuthContext from '../../store/auth-context';
+
 
 const ProfileForm = () => {
   const history = useHistory();
-  const newPasswordInputRef = useRef();
-  const authCtx = useContext(AuthContext);
+  const emailInputRef = useRef();
+  
 
   const submitHandler = event => {
     event.preventDefault();
 
-    const enteredNewPassword = newPasswordInputRef.current.value;
+    const enteredEmail = emailInputRef.current.value;
 
-    fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyA-ZiBDqAYaaBy2czSnBwxdUgrRk0Y0Qjs', {
+    fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyA-ZiBDqAYaaBy2czSnBwxdUgrRk0Y0Qjs', {
       method: 'POST',
       body: JSON.stringify({
-        idToken : authCtx.token,
-        password : enteredNewPassword,
-        returnSecureToken : true
-      }),
+        requestType : 'PASSWORD_RESET', 
+        email : enteredEmail,
+         }),
       headers: {
         'Content-Type': 'application/json'
       }
-    }).then(res =>{
-      history.replace('/auth');
+    }).then(() => {
+      alert('Password reset email sent. Check your email to reset your password.');
+      history.push('/auth');
     })
-  };
+    .catch((error) => {
+
+      alert(error.message);
+    });
+};
   return (
     <form className={classes.form} onSubmit={submitHandler}>
       <div className={classes.control}>
-        <label htmlFor='new-password'>New Password</label>
-        <input type='password' id='new-password'minLength="6" ref={newPasswordInputRef}/>
+        <label htmlFor='new-password'>Enter your email</label>
+        <input type='email' id='new-password' ref={emailInputRef}/>
       </div>
       <div className={classes.action}>
-        <button>Change Password</button>
+        <button>Get your password</button>
       </div>
     </form>
   );

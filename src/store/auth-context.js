@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 const AuthContext = React.createContext({
   token: "",
   isLoggedIn: false,
+  profileComplete: false,
   login: (token) => {},
   logout: () => {},
 });
@@ -11,7 +12,7 @@ export const AuthContextProvider = (props) => {
   const initialToken = localStorage.getItem("token");
   const [token, setToken] = useState(initialToken);
   const [logoutTimer, setLogoutTimer] = useState(null); // Store the logout timer ID
-
+  const [profileComplete, setProfileComplete] = useState(false);
   const userIsLoggedIn = !!token;
 
   // Reset the logout timer whenever there's user activity
@@ -41,21 +42,29 @@ export const AuthContextProvider = (props) => {
     setToken(token);
     localStorage.setItem("token", token);
     resetLogoutTimer(); // Reset the timer after login
+  
   };
 
   const logoutHandler = () => {
     setToken(null);
     localStorage.removeItem("token");
+    setProfileComplete(false);
     if (logoutTimer) {
       clearTimeout(logoutTimer);
     }
   };
+const setProfileCompleteState = (value) => {
+  setProfileComplete(value);
+}
+
 
   const contextValue = {
     token: token,
     isLoggedIn: userIsLoggedIn,
+    profileComplete: profileComplete,
     login: loginHandler,
     logout: logoutHandler,
+    setProfileCompleteState: setProfileCompleteState,
   };
 
   return (

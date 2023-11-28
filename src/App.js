@@ -5,6 +5,7 @@ import UserProfile from './components/Profile/UserProfile';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
 import AuthContext from './store/auth-context';
+import UpdatingProfile from './components/Starting Page/updateingProfile';
 
 function App() {
   const authCtx = useContext(AuthContext);
@@ -24,9 +25,13 @@ function App() {
           <UserProfile />
         </Route>
         )}
+        <Route path='/upProfile'>
+            <UpdatingProfile />
+        </Route>
         <Route path='*'>
           <Redirect to='/'/>
         </Route>
+        
       </Switch>
     </Layout>
   );
