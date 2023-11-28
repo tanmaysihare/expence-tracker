@@ -59,9 +59,9 @@ const UpdatingProfile = () => {
       <form onSubmit={submitHandler}>
         <h2>Contact Details</h2>
         <label>Full Name: </label>
-        <input type="text" value={displayNameRef} required ref={displayNameRef} />
+        <input type="text"  required ref={displayNameRef} />
         <label>Profile Photo URL</label>
-        <input type="url" value={photoUrlRef} required ref={photoUrlRef} />
+        <input type="url"  required ref={photoUrlRef} />
         <button type="submit">Update</button>
       </form>
     </>
