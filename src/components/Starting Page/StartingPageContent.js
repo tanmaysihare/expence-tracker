@@ -2,6 +2,8 @@ import classes from './StartingPageContent.module.css';
 import { useContext, useState } from 'react';
 import AuthContext from '../../store/auth-context';
 import { useHistory } from 'react-router-dom';
+import ExpenseTracker from '../Expances/ExpenseTracker';
+import { ExpenseProvider } from '../../store/ExpenseContext';
 
 const StartingPageContent = () => {
   const authCtx = useContext(AuthContext);
@@ -44,7 +46,7 @@ const StartingPageContent = () => {
 
       const data = await response.json();
       setVerifyEmail(true);
-      console.log('Verification complete');
+      console.log('Verification complete', data);
     } catch (error) {
       // Display the error message on the page or redirect to an error page
       console.error('Email verification error', error.message);
@@ -83,12 +85,7 @@ const StartingPageContent = () => {
         <section className={classes.starting}>
           <h1>Welcome to expense tracker</h1>
           <div>
-            <form>
-              <label>Account Holder Name</label>
-              <input type="text" />
-              <label>Photo url</label>
-              <input type="text" />
-            </form>
+           <ExpenseProvider><ExpenseTracker /></ExpenseProvider>
           </div>
         </section>
       )}
