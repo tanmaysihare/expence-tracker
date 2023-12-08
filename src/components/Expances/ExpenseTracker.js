@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import ExpenseList from './ExpenceList';
 import { ExpenseContext } from '../../store/ExpenseContext'; // Create ExpenseContext
 
@@ -8,7 +8,7 @@ const ExpenseTracker = () => {
   const [category, setCategory] = useState('');
   const { expenses, addExpense } = useContext(ExpenseContext); // Use ExpenseContext
 
-  const handleSubmit = (e) => {
+  const submitHandler = async(e) => {
     e.preventDefault();
 
     // Validate inputs
@@ -16,20 +16,65 @@ const ExpenseTracker = () => {
       alert('Please fill in all fields');
       return;
     }
-
+    const url = 'https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expense.json';
     // Add expense
-    addExpense({ amount, description, category });
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ amount, description, category }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    // Clear form fields
-    setAmount('');
-    setDescription('');
-    setCategory('');
+      if (!response.ok) {
+        throw new Error('Failed to add expense');
+      }
+
+      const data = await response.json();
+      console.log('Expense added successfully:', data);
+
+      // Update local state with the new expense
+      addExpense({ amount, description, category });
+
+      // Clear the form
+      setAmount('');
+      setDescription('');
+      setCategory('');
+    } catch (error) {
+      console.error('Error adding expense:', error.message);
+    }
+  
   };
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      // Make API call to get expenses from Firebase
+      const url = 'https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expenses.json'; // Replace with your Firebase database URL
+
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch expenses');
+        }
+
+        const data = await response.json();
+
+        // Transform data into an array of expenses
+        addExpense({ amount, description, category });
+      } catch (error) {
+        console.error('Error fetching expenses:', error.message);
+      }
+    };
+
+    fetchExpenses();
+  }, []); // Empty dependency array ensures this effect runs only once on mount
+
 
   return (
     <div>
       <h2>Expense Tracker</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <label>
           Amount:
           <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
@@ -48,7 +93,7 @@ const ExpenseTracker = () => {
             {/* Add more categories as needed */}
           </select>
         </label>
-        <button type="submit">Add Expense</button>
+        <button onClick={submitHandler}>Add Expense</button>
       </form>
 
       <ExpenseList expenses={expenses} />

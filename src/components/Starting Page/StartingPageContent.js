@@ -46,7 +46,7 @@ const StartingPageContent = () => {
 
       const data = await response.json();
       setVerifyEmail(true);
-      console.log('Verification complete', data);
+      console.log('Verification complete',data);
     } catch (error) {
       // Display the error message on the page or redirect to an error page
       console.error('Email verification error', error.message);
