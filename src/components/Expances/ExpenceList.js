@@ -1,16 +1,27 @@
 import React from 'react';
 
-const ExpenseList = ({ expenses }) => {
+const ExpenseList = ({ expenses, deleteExpenseHandler, editExpenseHandler }) => {
   return (
     <div>
       <h3>Expense List</h3>
       <ul>
-        {expenses.map((expense, index) => (
-          <li key={index}>
-            <strong>Amount:</strong> {expense.amount}, <strong>Description:</strong> {expense.description},{' '}
-            <strong>Category:</strong> {expense.category}
-          </li>
-        ))}
+        {Array.isArray(expenses[0])
+          ? expenses[0].map((expense) => (
+              <li key={expense.id}>
+                <strong>Amount:</strong> {expense.amount}, <strong>Description:</strong> {expense.description},{' '}
+                <strong>Category:</strong> {expense.category}
+                <button onClick={() => editExpenseHandler(expense.id)}>Edit</button>
+                <button onClick={() => deleteExpenseHandler(expense.id)}>Delete</button>
+              </li>
+            ))
+          : expenses.map((expense) => (
+              <li key={expense.id} >
+                <strong>Amount:</strong> {expense.amount}, <strong>Description:</strong> {expense.description},{' '}
+                <strong>Category:</strong> {expense.category}
+                <button onClick={() => editExpenseHandler(expense.id)}>Edit</button>
+                <button onClick={() => deleteExpenseHandler(expense.id)}>Delete</button>
+              </li>
+            ))}
       </ul>
     </div>
   );

@@ -22,7 +22,7 @@ export const AuthContextProvider = (props) => {
     }
     const newLogoutTimer = setTimeout(() => {
       logoutHandler();
-    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+    }, 50 * 60 * 1000); // 5 minutes in milliseconds
     setLogoutTimer(newLogoutTimer);
   };
 

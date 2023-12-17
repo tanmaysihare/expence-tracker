@@ -10,11 +10,14 @@ const StartingPageContent = () => {
   const isLoggedIn = authCtx.isLoggedIn;
   const completeProfile = authCtx.profileComplete;
   const history = useHistory();
-  const [verifyEmail, setVerifyEmail] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
 
   const buttonHandler = () => {
-    history.push('/upProfile');
+    if(!setVerifyEmail){
+      history.push('/upProfile');
+    }
+    
   };
 
   const verifyButtonHandler = async () => {
@@ -45,6 +48,7 @@ const StartingPageContent = () => {
       }
 
       const data = await response.json();
+      localStorage.setItem('setVerifyEmail',true);
       setVerifyEmail(true);
       console.log('Verification complete',data);
     } catch (error) {
@@ -67,7 +71,7 @@ const StartingPageContent = () => {
           </form>
         </div>
       )}
-      {isLoggedIn && verifyEmail && !completeProfile && (
+      {isLoggedIn && verifyEmail && completeProfile && (
         <div>
           <div>
             <form>
@@ -81,7 +85,7 @@ const StartingPageContent = () => {
           </div>
         </div>
       )}
-      {isLoggedIn && completeProfile && (
+      {isLoggedIn && !completeProfile && (
         <section className={classes.starting}>
           <h1>Welcome to expense tracker</h1>
           <div>

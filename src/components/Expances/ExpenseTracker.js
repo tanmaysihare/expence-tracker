@@ -1,55 +1,104 @@
-import React, { useState, useContext,useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import ExpenseList from './ExpenceList';
-import { ExpenseContext } from '../../store/ExpenseContext'; // Create ExpenseContext
+import { ExpenseContext } from '../../store/ExpenseContext';
 
 const ExpenseTracker = () => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  const { expenses, addExpense } = useContext(ExpenseContext); // Use ExpenseContext
+  const [editExpenseId, setEditExpenseId] = useState(null);
+  const { expenses, addExpense, deleteExpense, editExpense } = useContext(ExpenseContext);
 
-  const submitHandler = async(e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    // Validate inputs
     if (!amount || !description || !category) {
       alert('Please fill in all fields');
       return;
     }
-    const url = 'https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expense.json';
-    // Add expense
+
+    if (editExpenseId) {
+      editExpenseHandler(editExpenseId, { amount, description, category });
+      setEditExpenseId(null);
+    } else {
+      const url = 'https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expense.json';
+      function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min) + min);
+      }
+      let indexId = getRandomInt(1,1000000);      
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({ id:indexId,amount, description, category }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add expense');
+        }
+
+        const data = await response.json();
+        console.log('Expense added successfully:', data);
+
+        addExpense({ amount, description, category });
+
+        setAmount('');
+        setDescription('');
+        setCategory('');
+      } catch (error) {
+        console.error('Error adding expense:', error.message);
+      }
+    }
+  };
+
+  const deleteExpenseHandler = async (id) => {
     try {
+      const url = `https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expense/${id}.json`;
       const response = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({ amount, description, category }),
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete expense');
+      }
+
+      console.log('Expense successfully deleted',id);
+      deleteExpense(id);
+    } catch (error) {
+      console.error('Error deleting expense:', error.message);
+    }
+  };
+
+  const editExpenseHandler = async (expenseId, updatedExpense) => {
+    try {
+      const url = `https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expense/${expenseId}.json`;
+      const response = await fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(updatedExpense),
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add expense');
+        throw new Error('Failed to edit expense');
       }
 
-      const data = await response.json();
-      console.log('Expense added successfully:', data);
-
-      // Update local state with the new expense
-      addExpense({ amount, description, category });
-
-      // Clear the form
-      setAmount('');
-      setDescription('');
-      setCategory('');
+      console.log('Expense successfully edited');
+      editExpense(expenseId, updatedExpense);
+     setEditExpenseId(null);
     } catch (error) {
-      console.error('Error adding expense:', error.message);
+      console.error('Error editing expense:', error.message);
     }
-  
   };
+
   useEffect(() => {
     const fetchExpenses = async () => {
-      // Make API call to get expenses from Firebase
-      const url = 'https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expenses.json'; // Replace with your Firebase database URL
+      const url = 'https://expanse-tracker-2f5d9-default-rtdb.firebaseio.com/expense.json';
 
       try {
         const response = await fetch(url);
@@ -59,17 +108,16 @@ const ExpenseTracker = () => {
         }
 
         const data = await response.json();
+        const loadedExpenses = data ? Object.values(data) : [];
 
-        // Transform data into an array of expenses
-        addExpense({ amount, description, category });
+        addExpense(loadedExpenses);
       } catch (error) {
         console.error('Error fetching expenses:', error.message);
       }
     };
 
     fetchExpenses();
-  }, []); // Empty dependency array ensures this effect runs only once on mount
-
+  }, []);
 
   return (
     <div>
@@ -90,13 +138,18 @@ const ExpenseTracker = () => {
             <option value="Food">Food</option>
             <option value="Petrol">Petrol</option>
             <option value="Salary">Salary</option>
-            {/* Add more categories as needed */}
           </select>
         </label>
-        <button onClick={submitHandler}>Add Expense</button>
+        <button type="button" onClick={submitHandler}>
+          {editExpenseId ? 'Update Expense' : 'Add Expense'}
+        </button>
       </form>
 
-      <ExpenseList expenses={expenses} />
+      <ExpenseList
+        expenses={expenses}
+        deleteExpenseHandler={deleteExpenseHandler}
+        editExpenseHandler={setEditExpenseId}
+      />
     </div>
   );
 };
